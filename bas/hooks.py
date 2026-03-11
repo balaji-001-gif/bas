@@ -15,15 +15,15 @@ app_license = "mit"
 
 
 # Each item in the list will be shown as an app in the apps page
-# add_to_apps_screen = [
-# 	{
-# 		"name": "bas",
-# 		"logo": "/assets/bas/logo.png",
-# 		"title": "bas",
-# 		"route": "/bas",
-# 		"has_permission": "bas.api.permission.has_app_permission"
-# 	}
-# ]
+add_to_apps_screen = [
+	{
+		"name": "bas",
+		"logo": "/assets/bas/logo.png",
+		"title": "Bas",
+		"route": "/bas_portal",
+		"has_permission": "bas.bas_api.has_app_permission"
+	}
+]
 
 # Includes in <head>
 # ------------------
@@ -61,12 +61,12 @@ app_license = "mit"
 # ----------
 
 # application home page (will override Website Settings)
-# home_page = "login"
+home_page = "bas_portal"
 
 # website user home page (by Role)
-# role_home_page = {
-# 	"Role": "home_page"
-# }
+role_home_page = {
+	"Employee": "bas_portal"
+}
 
 # Generators
 # ----------

@@ -1,0 +1,319 @@
+{% extends "templates/web.html" %}
+
+{% block header %}
+<link rel="manifest" href="/assets/bas/manifest.json">
+<meta name="theme-color" content="#1a1c23">
+<style>
+    :root {
+        --primary: #4f46e5;
+        --bg-dark: #111827;
+        --card-bg: rgba(31, 41, 55, 0.7);
+        --text-main: #f3f4f6;
+        --text-muted: #9ca3af;
+        --accent: #10b981;
+    }
+
+    body {
+        background-color: var(--bg-dark);
+        color: var(--text-main);
+        font-family: 'Inter', sans-serif;
+        margin: 0;
+        padding-bottom: 80px; /* Space for bottom nav */
+        overflow-x: hidden;
+    }
+
+    .glass-card {
+        background: var(--card-bg);
+        backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 20px;
+        padding: 20px;
+        margin-bottom: 15px;
+        transition: transform 0.2s;
+    }
+
+    .header-section {
+        padding: 30px 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .user-greeting h1 {
+        font-size: 24px;
+        margin: 0;
+        font-weight: 700;
+    }
+
+    .user-greeting p {
+        color: var(--text-muted);
+        margin: 5px 0 0;
+    }
+
+    .avatar-ring {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background: linear-gradient(45deg, var(--primary), var(--accent));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 3px;
+    }
+
+    .avatar-img {
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        background: #374151;
+        object-fit: cover;
+    }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 15px;
+        padding: 0 20px;
+    }
+
+    .check-in-btn {
+        width: 100%;
+        padding: 18px;
+        border-radius: 15px;
+        border: none;
+        background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+        color: white;
+        font-weight: 600;
+        font-size: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        box-shadow: 0 10px 15px -3px rgba(79, 70, 229, 0.4);
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .check-in-btn.checked {
+        background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+        box-shadow: 0 10px 15px -3px rgba(220, 38, 38, 0.4);
+    }
+
+    .bottom-nav {
+        position: fixed;
+        bottom: 20px;
+        left: 20px;
+        right: 20px;
+        background: rgba(17, 24, 39, 0.9);
+        backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 25px;
+        display: flex;
+        justify-content: space-around;
+        padding: 15px;
+        z-index: 1000;
+    }
+
+    .nav-item {
+        color: var(--text-muted);
+        text-decoration: none;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        font-size: 10px;
+        gap: 5px;
+    }
+
+    .nav-item.active {
+        color: var(--primary);
+    }
+
+    .nav-item i {
+        font-size: 20px;
+    }
+
+    /* Animations */
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .animate-in {
+        animation: fadeIn 0.5s ease forwards;
+    }
+
+    .status-badge {
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        background: rgba(16, 185, 129, 0.2);
+        color: var(--accent);
+    }
+</style>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+{% endblock %}
+
+{% block content %}
+<div class="header-section animate-in">
+    <div class="user-greeting">
+        <p id="current-date">Today, 11 Mar</p>
+        <h1 id="user-name">Welcome back!</h1>
+    </div>
+    <div class="avatar-ring">
+        <img id="user-avatar" src="/assets/frappe/images/default-avatar.png" class="avatar-img">
+    </div>
+</div>
+
+<div class="stats-grid animate-in" style="animation-delay: 0.1s">
+    <div class="glass-card">
+        <p style="color: var(--text-muted); font-size: 14px; margin-bottom: 5px;">Work Status</p>
+        <span class="status-badge" id="work-status">Auto</span>
+    </div>
+    <div class="glass-card">
+        <p style="color: var(--text-muted); font-size: 14px; margin-bottom: 5px;">Total Hours</p>
+        <h3 style="margin: 0; color: var(--text-main);">0h 0m</h3>
+    </div>
+</div>
+
+<div style="padding: 0 20px; margin-top: 10px;" class="animate-in" style="animation-delay: 0.2s">
+    <button class="check-in-btn" id="checkin-btn">
+        <i class="fas fa-clock"></i>
+        <span>Check In</span>
+    </button>
+</div>
+
+<div style="padding: 20px;" class="animate-in" style="animation-delay: 0.3s">
+    <h2 style="font-size: 18px; margin-bottom: 15px;">Your Activities</h2>
+    <div id="activities-container">
+        <div class="glass-card" style="display: flex; align-items: center; gap: 15px; opacity: 0.7;">
+            <i class="fas fa-info-circle"></i>
+            <p style="margin: 0; font-size: 14px;">No activities available yet.</p>
+        </div>
+    </div>
+</div>
+
+<nav class="bottom-nav">
+    <a href="/bas_portal" class="nav-item active">
+        <i class="fas fa-home"></i>
+        <span>Home</span>
+    </a>
+    <a href="#" class="nav-item">
+        <i class="fas fa-calendar-check"></i>
+        <span>Attendance</span>
+    </a>
+    <a href="#" class="nav-item" onclick="frappe.set_route('List', 'Bas Post')">
+        <i class="fas fa-users"></i>
+        <span>Social</span>
+    </a>
+    <a href="#" class="nav-item">
+        <i class="fas fa-user-cog"></i>
+        <span>Settings</span>
+    </a>
+</nav>
+
+{% endblock %}
+
+{% block script %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Load initial data
+        loadUserData();
+        checkTodayStatus();
+
+        // Check-in logic
+        document.getElementById('checkin-btn').addEventListener('click', function() {
+            handleCheckIn();
+        });
+
+        // Set Date
+        const d = new Date();
+        const options = { weekday: 'short', day: 'numeric', month: 'short' };
+        document.getElementById('current-date').innerText = d.toLocaleDateString('en-US', options);
+    });
+
+    function loadUserData() {
+        frappe.call({
+            method: 'bas.bas_api.user_details',
+            callback: function(r) {
+                if(r.message && r.message.status) {
+                    const data = r.message.data;
+                    document.getElementById('user-name').innerText = 'Hi, ' + (data.full_name || 'User');
+                    if(data.user_image) {
+                        document.getElementById('user-avatar').src = data.user_image;
+                    }
+                }
+            }
+        });
+    }
+
+    function checkTodayStatus() {
+        frappe.call({
+            method: 'bas.bas_api.employee_checkin_status',
+            callback: function(r) {
+                if(r.message && r.message.status) {
+                    toggleCheckInUI(true);
+                } else {
+                    toggleCheckInUI(false);
+                }
+            }
+        });
+    }
+
+    function handleCheckIn() {
+        const btn = document.getElementById('checkin-btn');
+        const isCheckingIn = !btn.classList.contains('checked');
+        
+        // Basic location tracking (as requested for PWA)
+        if ("geolocation" in navigator) {
+            navigator.geolocation.getCurrentPosition(function(position) {
+                const latlong = position.coords.latitude + "," + position.coords.longitude;
+                
+                frappe.call({
+                    method: 'bas.bas_api.employee_checkin',
+                    args: {
+                        log_type: isCheckingIn ? 'IN' : 'OUT',
+                        latlong: latlong,
+                        latitude: position.coords.latitude,
+                        longitude: position.coords.longitude
+                    },
+                    callback: function(r) {
+                        if(r.message && r.message.status) {
+                            toggleCheckInUI(isCheckingIn);
+                            frappe.show_alert({message: `Successfully Checked ${isCheckingIn ? 'In' : 'Out'}`, indicator: 'green'});
+                        }
+                    }
+                });
+            });
+        }
+    }
+
+    function toggleCheckInUI(isCheckedIn) {
+        const btn = document.getElementById('checkin-btn');
+        const status = document.getElementById('work-status');
+        if(isCheckedIn) {
+            btn.classList.add('checked');
+            btn.querySelector('span').innerText = 'Check Out';
+            status.innerText = 'On Duty';
+            status.style.color = '#10b981';
+            status.style.background = 'rgba(16, 185, 129, 0.2)';
+        } else {
+            btn.classList.remove('checked');
+            btn.querySelector('span').innerText = 'Check In';
+            status.innerText = 'Off Duty';
+            status.style.color = '#ef4444';
+            status.style.background = 'rgba(239, 68, 68, 0.2)';
+        }
+    }
+
+    // Register Service Worker for PWA
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('/assets/bas/js/sw.js').then(reg => {
+                console.log('SW registered', reg);
+            }).catch(err => {
+                console.log('SW registration failed', err);
+            });
+        });
+    }
+</script>
+{% endblock %}

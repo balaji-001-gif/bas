@@ -1,0 +1,21 @@
+{
+  "name": "Bas HRMS",
+  "short_name": "Bas",
+  "description": "Premium Mobile HRMS Application",
+  "start_url": "/bas_portal",
+  "display": "standalone",
+  "background_color": "#111827",
+  "theme_color": "#4f46e5",
+  "icons": [
+    {
+      "src": "/assets/bas/images/logo.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/assets/bas/images/logo.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

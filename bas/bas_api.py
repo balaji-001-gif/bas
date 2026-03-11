@@ -12,6 +12,12 @@ from frappe.utils import get_url
 
 
 @frappe.whitelist()
+def has_app_permission():
+    if frappe.session.user == "Guest":
+        return False
+    return True
+
+@frappe.whitelist()
 def create_bas_report_print():
     try:
         frappe.log_error('create report',frappe.form_dict)
