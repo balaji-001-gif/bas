@@ -1,9 +1,9 @@
 [project]
-name = "appe"
+name = "bas"
 authors = [
     { name = "Kamesh", email = "kamesh@eactive.in"}
 ]
-description = "appe"
+description = "bas"
 requires-python = ">=3.10"
 readme = "README.md"
 dynamic = ["version"]
