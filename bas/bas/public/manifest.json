@@ -4,18 +4,37 @@
   "description": "Premium Mobile HRMS Application",
   "start_url": "/bas_portal",
   "display": "standalone",
+  "orientation": "portrait",
   "background_color": "#111827",
   "theme_color": "#4f46e5",
+  "categories": ["productivity", "business"],
   "icons": [
     {
       "src": "/assets/bas/images/logo.png",
       "sizes": "192x192",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     },
     {
       "src": "/assets/bas/images/logo.png",
       "sizes": "512x512",
       "type": "image/png"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Check In",
+      "short_name": "Check In",
+      "url": "/bas_portal#checkin",
+      "description": "Quickly check in for work",
+      "icons": [{ "src": "/assets/bas/images/logo.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Social",
+      "short_name": "Social",
+      "url": "/bas_portal#social",
+      "description": "View internal social updates",
+      "icons": [{ "src": "/assets/bas/images/logo.png", "sizes": "192x192" }]
     }
   ]
 }
