@@ -21,7 +21,7 @@ add_to_apps_screen = [
 		"logo": "/assets/bas/logo.png",
 		"title": "Bas",
 		"route": "/bas_portal",
-		"has_permission": "bas.bas_api.has_app_permission"
+		"has_permission": "bas.bas.bas_api.has_app_permission"
 	}
 ]
 
@@ -151,7 +151,7 @@ role_home_page = {
 
 doc_events = {
 	"Prepared Report": {
-		"on_update": "bas.bas_api.update_bas_reports",
+		"on_update": "bas.bas.bas_api.update_bas_reports",
 	}
 }
 

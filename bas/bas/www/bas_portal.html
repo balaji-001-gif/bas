@@ -310,7 +310,7 @@
 
     function loadUserData() {
         frappe.call({
-            method: 'bas.bas_api.user_details',
+            method: 'bas.bas.bas_api.user_details',
             callback: function(r) {
                 if(r.message && r.message.status) {
                     const data = r.message.data;
@@ -325,7 +325,7 @@
 
     function checkTodayStatus() {
         frappe.call({
-            method: 'bas.bas_api.employee_checkin_status',
+            method: 'bas.bas.bas_api.employee_checkin_status',
             callback: function(r) {
                 if(r.message && r.message.status) {
                     toggleCheckInUI(true);
@@ -345,7 +345,7 @@
                 const latlong = position.coords.latitude + "," + position.coords.longitude;
                 
                 frappe.call({
-                    method: 'bas.bas_api.employee_checkin',
+                    method: 'bas.bas.bas_api.employee_checkin',
                     args: {
                         log_type: isCheckingIn ? 'IN' : 'OUT',
                         latlong: latlong,
