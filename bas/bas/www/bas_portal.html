@@ -64,16 +64,98 @@
 
     .pwa-install-badge {
         display: none;
-        background: rgba(99, 102, 241, 0.15);
-        color: #818cf8;
-        padding: 6px 12px;
-        border-radius: 12px;
-        font-size: 13px;
-        font-weight: 600;
-        border: 1px solid rgba(99, 102, 241, 0.3);
+        background: linear-gradient(135deg, var(--primary), #4f46e5);
+        color: white;
+        padding: 6px 14px;
+        border-radius: 20px;
+        font-size: 11px;
+        font-weight: 700;
         cursor: pointer;
+        box-shadow: 0 4px 15px var(--primary-glow);
         animation: pulse 2s infinite;
-        margin-left: 10px;
+    }
+
+    /* New High-Visibility Install Overlay */
+    #pwa-install-overlay {
+        display: none;
+        position: fixed;
+        bottom: 100px;
+        left: 20px;
+        right: 20px;
+        background: rgba(30, 41, 59, 0.95);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        padding: 20px;
+        border-radius: 24px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        z-index: 1001;
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        transform: translateY(150%);
+        transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    #pwa-install-overlay.show {
+        display: flex;
+        flex-direction: column;
+        transform: translateY(0);
+    }
+
+    .overlay-content {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        margin-bottom: 20px;
+    }
+
+    .overlay-icon {
+        width: 54px;
+        height: 54px;
+        background: var(--primary);
+        border-radius: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+        color: white;
+        box-shadow: 0 8px 16px rgba(99, 102, 241, 0.3);
+    }
+
+    .overlay-text h4 {
+        margin: 0;
+        font-size: 16px;
+        color: white;
+    }
+
+    .overlay-text p {
+        margin: 4px 0 0;
+        font-size: 13px;
+        color: var(--text-muted);
+    }
+
+    .overlay-actions {
+        display: flex;
+        gap: 12px;
+    }
+
+    .btn-install-now {
+        flex: 1;
+        background: var(--primary);
+        color: white;
+        border: none;
+        padding: 12px;
+        border-radius: 12px;
+        font-weight: 700;
+        font-size: 14px;
+    }
+
+    .btn-not-now {
+        background: rgba(255, 255, 255, 0.05);
+        color: var(--text-muted);
+        border: none;
+        padding: 12px 20px;
+        border-radius: 12px;
+        font-weight: 600;
+        font-size: 14px;
     }
 
     @keyframes pulse {
@@ -261,6 +343,23 @@
     </a>
 </nav>
 
+<!-- PWA Install Overlay -->
+<div id="pwa-install-overlay">
+    <div class="overlay-content">
+        <div class="overlay-icon">
+            <i class="fas fa-mobile-alt"></i>
+        </div>
+        <div class="overlay-text">
+            <h4>Install BAS App</h4>
+            <p>Add to home screen for quick access and offline use.</p>
+        </div>
+    </div>
+    <div class="overlay-actions">
+        <button class="btn-install-now" id="overlay-install-btn">Install Now</button>
+        <button class="btn-not-now" id="overlay-not-now-btn">Not Now</button>
+    </div>
+</div>
+
 {% endblock %}
 
 {% block script %}
@@ -283,29 +382,56 @@
         document.getElementById('current-date').innerText = d.toLocaleDateString('en-US', options);
 
         // PWA Install logic
-        const installBtn = document.getElementById('install-pwa');
-        window.addEventListener('beforeinstallprompt', (e) => {
-            e.preventDefault();
-            deferredPrompt = e;
-            installBtn.style.display = 'block';
-        });
+    let deferredPrompt;
+    const installBtn = document.getElementById('install-pwa');
+    const overlay = document.getElementById('pwa-install-overlay');
+    const overlayBtn = document.getElementById('overlay-install-btn');
+    const overlayNotNowBtn = document.getElementById('overlay-not-now-btn');
 
-        installBtn.addEventListener('click', async () => {
-            if (deferredPrompt) {
-                deferredPrompt.prompt();
-                const { outcome } = await deferredPrompt.userChoice;
-                if (outcome === 'accepted') {
-                    installBtn.style.display = 'none';
+    window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
+        installBtn.style.display = 'block';
+        // Automatically show overlay after a short delay
+        setTimeout(() => {
+            overlay.classList.add('show');
+        }, 1500);
+    });
+
+    overlayBtn.addEventListener('click', () => {
+        if (deferredPrompt) {
+            deferredPrompt.prompt();
+            deferredPrompt.userChoice.then((choiceResult) => {
+                if (choiceResult.outcome === 'accepted') {
+                    console.log('User accepted the install prompt');
                 }
                 deferredPrompt = null;
-            }
-        });
+                overlay.classList.remove('show');
+                installBtn.style.display = 'none';
+            });
+        }
+    });
 
-        window.addEventListener('appinstalled', () => {
-            installBtn.style.display = 'none';
-            deferredPrompt = null;
-            frappe.show_alert({message: 'App installed successfully!', indicator: 'green'});
-        });
+    overlayNotNowBtn.addEventListener('click', () => {
+        overlay.classList.remove('show');
+    });
+
+    installBtn.addEventListener('click', () => {
+        if (deferredPrompt) {
+            deferredPrompt.prompt();
+            deferredPrompt.userChoice.then((choiceResult) => {
+                deferredPrompt = null;
+                installBtn.style.display = 'none';
+                overlay.classList.remove('show');
+            });
+        }
+    });
+
+    window.addEventListener('appinstalled', () => {
+        installBtn.style.display = 'none';
+        overlay.classList.remove('show');
+        frappe.show_alert({message: 'App installed successfully!', indicator: 'green'});
+    });
     });
 
     function loadUserData() {

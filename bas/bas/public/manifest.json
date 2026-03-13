@@ -36,5 +36,14 @@
       "description": "View internal social updates",
       "icons": [{ "src": "/assets/bas/images/logo.png", "sizes": "192x192" }]
     }
+  ],
+  "screenshots": [
+    {
+      "src": "/assets/bas/screenshots/mobile_1.png",
+      "sizes": "1080x1920",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "App Home Screen"
+    }
   ]
 }
